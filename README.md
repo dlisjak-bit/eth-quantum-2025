@@ -7,8 +7,8 @@ https://qec.amiv.ethz.ch/qhack25/
 
 ### Studious
 
-- [ ] Priporočen starter resource: [IBM: Basics of Quantum Information] (https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems)
+- [ ] Priporočen starter resource: [IBM: Basics of Quantum Information](https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems)
 
 ### Praksa
 
-- [ ] [ETHZ Hackathon 2024 github z navodili in papers] (https://github.com/CQCL/ethz-hack-24)
+- [ ] [ETHZ Hackathon 2024 github z navodili in papers](https://github.com/CQCL/ethz-hack-24)
