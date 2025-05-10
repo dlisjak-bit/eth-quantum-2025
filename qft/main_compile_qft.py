@@ -1,0 +1,39 @@
+
+import sys
+import os
+import pennylane as qml
+import numpy as np
+
+qftdir = os.path.abspath(os.path.join(os.path.dirname(__file__), ''))
+sys.path.insert(0, qftdir)
+print(qftdir)
+import verify_only_qft
+
+N=8
+
+def minihadamard(wire: int): 
+    gates = []
+    gates.append([("RY", np.pi / 2, wire)])
+    gates.append([("RX", np.pi, wire)])
+    return gates
+
+
+
+def qft_explicit_schedule(wires):
+    """Apply the Quantum Fourier Transform using H and controlled R_k gates."""
+    gate_schedule = []
+    for i in range(len(wires)):
+        # gate_schedule.append([("H",0, wires[i])])
+        gate_schedule.extend(minihadamard(wires[i]))
+        for j in range(i + 1, len(wires)):
+            angle = np.pi / (2 ** (j - i))
+            # qml.ctrl(qml.RZ, control=wires[j])(angle, wires=wires[i])
+            gate_schedule.append([("RZ", angle, (wires[j], wires[i]))]) # prvi wire: control, drugi: target
+    return gate_schedule
+
+
+# hadamard_test_schedule = hadamard_test(0)
+# verify_only_qft.verifier_qft(hadamard_test_schedule, use_dummy=True)
+
+gate_sequence_test = qft_explicit_schedule(range(N))
+verify_only_qft.verifier_qft(gate_sequence_test)
