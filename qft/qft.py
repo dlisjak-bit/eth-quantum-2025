@@ -29,5 +29,16 @@ def qft_explicit_schedule(wires):
 # verify_only_qft.verifier_qft(hadamard_test_schedule, use_dummy=True)
 
 gate_sequence_test = qft_explicit_schedule(range(N))
-print("Gate sequence test:", gate_sequence_test)
+count = 0
+print("Gate sequence test:", len(gate_sequence_test))
+for gate in gate_sequence_test:
+    # print("Gate:", gate)
+    if gate[0][2] == 1:
+        print(gate[0][0], gate[0][2])
+        count += 1
+    elif gate[0][0] == "MS":
+        if 1 in gate[0][2]:
+            count += 1
+            print(gate[0][0], gate[0][2])
+print("Count:", count)
 verify_only_qft.verifier_qft(gate_sequence_test)
