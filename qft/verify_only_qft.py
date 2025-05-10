@@ -33,10 +33,10 @@ def compiled_circuit(gates_schedule) -> qml.QNode:
                 elif gate[0] == "MS":
                     qml.IsingXX(gate[1], wires=gate[2])
                 ################ Custom extra gates----------------------------------------------------------
-                elif gate[0] == "H":
-                    qml.Hadamard(wires=gate[2])
-                elif gate[0] == "RZ":
-                    qml.ctrl(qml.RZ, control=gate[2][0])(gate[1], wires=gate[2][1])
+                # elif gate[0] == "H":
+                #     qml.Hadamard(wires=gate[2])
+                # elif gate[0] == "RZ":
+                #     qml.ctrl(qml.RZ, control=gate[2][0])(gate[1], wires=gate[2][1])
         # qml.GlobalPhase(np.pi/2)
         return qml.density_matrix(wires=range(N))
 

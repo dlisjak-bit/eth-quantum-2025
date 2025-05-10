@@ -1,11 +1,10 @@
-
 import sys
 import os
 import pennylane as qml
 import numpy as np
 
 import verify_only_qft
-from gates import minihadamard
+from gates import minihadamard, CRK
 
 N = 8
 
@@ -19,7 +18,10 @@ def qft_explicit_schedule(wires):
         for j in range(i + 1, len(wires)):
             angle = np.pi / (2 ** (j - i))
             # qml.ctrl(qml.RZ, control=wires[j])(angle, wires=wires[i])
-            gate_schedule.append([("RZ", angle, (wires[j], wires[i]))]) # prvi wire: control, drugi: target
+            # gate_schedule.append(
+            #     [("RZ", angle, (wires[j], wires[i]))]
+            # )  # prvi wire: control, drugi: target
+            gate_schedule.extend(CRK(j - i, wires[j], wires[i]))
     return gate_schedule
 
 
@@ -27,4 +29,5 @@ def qft_explicit_schedule(wires):
 # verify_only_qft.verifier_qft(hadamard_test_schedule, use_dummy=True)
 
 gate_sequence_test = qft_explicit_schedule(range(N))
+print("Gate sequence test:", gate_sequence_test)
 verify_only_qft.verifier_qft(gate_sequence_test)
