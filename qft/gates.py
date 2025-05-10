@@ -8,9 +8,9 @@ def minihadamard(wire: int):
 
 
 def Rz(theta: float, wire: int):
-    qml.RX(np.pi, wires=wire)
-    qml.RY(-theta, wires=wire)
-    qml.RX(np.pi, wires=wire)
+    qml.RX(-np.pi / 2, wires=wire)
+    qml.RY(theta, wires=wire)
+    qml.RX(np.pi / 2, wires=wire)
 
 
 def CNOT(control: int, target: int):
@@ -19,6 +19,22 @@ def CNOT(control: int, target: int):
     qml.RX(-np.pi / 2, wires=target)
     qml.RX(-np.pi / 2, wires=control)
     qml.RY(-np.pi / 2, wires=control)
+
+
+def Rk(k: int, wire: int):
+    Rz(2 * np.pi / 2**k, wire)
+
+
+def Rk_dag(k: int, wire: int):
+    Rz(-2 * np.pi / 2**k, wire)
+
+
+def CRk(k: int, control: int, target: int):
+    Rk(k + 1, target)
+    Rk(k + 1, control)
+    CNOT(control, target)
+    Rk_dag(k + 1, target)
+    CNOT(control, target)
 
 
 if __name__ == "__main__":
