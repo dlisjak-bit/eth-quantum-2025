@@ -3,6 +3,7 @@ import numpy as np
 
 N = 2
 dev = qml.device("default.qubit", wires=N)
+dev1 = qml.device("default.qubit", wires=N)
 
 
 # $wire parameter can possibly be a Sequence[int]
@@ -17,30 +18,47 @@ def Rz(theta: float, wire: int):
     qml.RX(np.pi, wires=wire)
 
 
-def cnot(controlwire: int, targetwire: int):
-    qml.RY(np.pi/2, wires=controlwire)
+def CNOT(control: int, target: int):
+    qml.RY(np.pi / 2, wires=control)
+    qml.IsingXX(np.pi / 2, wires=[control, target])
+    qml.RX(-np.pi / 2, wires=target)
+    qml.RX(-np.pi / 2, wires=control)
+    qml.RY(-np.pi / 2, wires=control)
 
-    qml.IsingXX(np.pi/2, wires=[controlwire, targetwire])
 
-    qml.RX(np.pi/2, wires=targetwire)
+def Rk(k: int, wire: int):
+    Rz(np.pi / 2**k, wire)
 
-    qml.RX(-np.pi/2, wires=targetwire)
-    qml.RY(-np.pi/2, wires=controlwire)
+
+def Rk_dag(k: int, wire: int):
+    Rz(2*np.pi / 2**k, wire)
+
+
+def CRk(k: int, control: int, target: int):
+    CNOT(control, target)
+    Rk_dag(k+1, target)
+    CNOT(control, target)
+    Rk(k+1, control)
+    Rk(k+1, target)
 
 
 @qml.qnode(dev)
-def circuit():
-    cnot(0, 1)
-    # for i in range(N):
-    # minihadamard(i)
-    # qml.IsingXX(np.pi, wires=)
-    # controlled_rk(k=2, control_wire=0, target_wire=1)
-
-    # theta = np.pi / (2 ** (2 - 1))
-    # qml.ctrl(qml.RZ, control=0)(theta, wires=1)
-
-    return qml.state()
+def circuit(k=2):
+    qml.ctrl(qml.RZ(np.pi / (2**k), wires=1), control=0)
+    return qml.density_matrix(wires=range(N))
 
 
-print(len(circuit()))
-print(np.round(circuit(), 2))
+@qml.qnode(dev1)
+def cnot(k=2):
+    CRk(k, control=0, target=1)
+
+    return qml.density_matrix(wires=range(N))
+
+
+expected_results = circuit()
+user_results = cnot()
+
+if np.allclose(expected_results, user_results, atol=1e-5):
+    print("Correct")
+else:
+    print(expected_results - user_results)

@@ -1,52 +1,30 @@
+
+import sys
+import os
 import pennylane as qml
 import numpy as np
 
-N = 2
-dev = qml.device("default.qubit", wires=N)
-dev1 = qml.device("default.qubit", wires=N)
+import verify_only_qft
+from gates import minihadamard
+
+N = 8
 
 
-# $wire parameter can possibly be a Sequence[int]
-def minihadamard(wire: int):
-    qml.RY(np.pi / 2, wires=wire)
-    qml.RX(np.pi, wires=wire)
+def qft_explicit_schedule(wires):
+    """Apply the Quantum Fourier Transform using H and controlled R_k gates."""
+    gate_schedule = []
+    for i in range(len(wires)):
+        # gate_schedule.append([("H",0, wires[i])])
+        gate_schedule.extend(minihadamard(wires[i]))
+        for j in range(i + 1, len(wires)):
+            angle = np.pi / (2 ** (j - i))
+            # qml.ctrl(qml.RZ, control=wires[j])(angle, wires=wires[i])
+            gate_schedule.append([("RZ", angle, (wires[j], wires[i]))]) # prvi wire: control, drugi: target
+    return gate_schedule
 
 
-def Rz(theta: float, wire: int):
-    qml.RX(np.pi, wires=wire)
-    qml.RY(-theta, wires=wire)
-    qml.RX(np.pi, wires=wire)
+# hadamard_test_schedule = hadamard_test(0)
+# verify_only_qft.verifier_qft(hadamard_test_schedule, use_dummy=True)
 
-
-def CNOT(control: int, target: int):
-    qml.RY(np.pi / 2, wires=control)
-    qml.IsingXX(np.pi / 2, wires=[control, target])
-    qml.RX(-np.pi / 2, wires=target)
-    qml.RX(-np.pi / 2, wires=control)
-    qml.RY(-np.pi / 2, wires=control)
-
-
-@qml.qnode(dev)
-def circuit():
-    qml.X(wires=0)
-    qml.ctrl(qml.X, control=0)(wires=1)
-
-    return qml.density_matrix(wires=range(N))
-
-@qml.qnode(dev1)
-def cnot():
-    qml.X(wires=0)
-    CNOT(0, 1)
-    
-    return qml.state()
-
-
-# expected_results = circuit()
-user_results = cnot()
-print(np.round(user_results, 2))
-
-# if np.allclose(expected_results, user_results, atol=1e-5):
-#     print("Correct")
-# else:
-#     print(expected_results - user_results)
-
+gate_sequence_test = qft_explicit_schedule(range(N))
+verify_only_qft.verifier_qft(gate_sequence_test)
