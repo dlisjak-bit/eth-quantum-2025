@@ -43,13 +43,14 @@ def create_trap_graph() -> nx.Graph:
     return trap
 
 
-
-def plot_trap_graph_positions(trap_graph, 
-                    qubit_positions=None,
-                    idle_height=1.5, 
-                    figsize=(8,8),
-                    label_offset=0.1,
-                    label_size=10):
+def plot_trap_graph_positions(
+    trap_graph,
+    qubit_positions=None,
+    idle_height=1.5,
+    figsize=(8, 8),
+    label_offset=0.1,
+    label_size=10,
+):
     """
     Plot the Penning trap graph in 3D, optionally annotating qubit indices.
 
@@ -71,8 +72,8 @@ def plot_trap_graph_positions(trap_graph,
     # 1) build 3D coords for every node
     pos3d = {}
     for n, data in trap_graph.nodes(data=True):
-        t = data['type']
-        if t in ('standard','interaction'):
+        t = data["type"]
+        if t in ("standard", "interaction"):
             r, c = n
             z = 0
         else:  # idle
@@ -82,29 +83,29 @@ def plot_trap_graph_positions(trap_graph,
 
     # 2) draw graph
     fig = plt.figure(figsize=figsize)
-    ax = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot(111, projection="3d")
     ax.xaxis.pane.fill = False
     ax.yaxis.pane.fill = False
     ax.zaxis.pane.fill = False
-    ax.xaxis.pane.set_edgecolor((1,1,1,0))
-    ax.yaxis.pane.set_edgecolor((1,1,1,0))
-    ax.zaxis.pane.set_edgecolor((1,1,1,0))
+    ax.xaxis.pane.set_edgecolor((1, 1, 1, 0))
+    ax.yaxis.pane.set_edgecolor((1, 1, 1, 0))
+    ax.zaxis.pane.set_edgecolor((1, 1, 1, 0))
     ax.grid(False)
 
     # edges
     for u, v in trap_graph.edges():
-        x0,y0,z0 = pos3d[u]
-        x1,y1,z1 = pos3d[v]
-        ax.plot([x0,x1],[y0,y1],[z0,z1], color='lightgray', lw=1)
+        x0, y0, z0 = pos3d[u]
+        x1, y1, z1 = pos3d[v]
+        ax.plot([x0, x1], [y0, y1], [z0, z1], color="lightgray", lw=1)
 
     # nodes
     specs = {
-      'standard':   ('blue',  50),
-      'interaction':('red',   80),
-      'idle':       ('green', 50),
+        "standard": ("blue", 50),
+        "interaction": ("red", 80),
+        "idle": ("green", 50),
     }
     for t, (col, sz) in specs.items():
-        nodes = [n for n,d in trap_graph.nodes(data=True) if d['type']==t]
+        nodes = [n for n, d in trap_graph.nodes(data=True) if d["type"] == t]
         xs = [pos3d[n][0] for n in nodes]
         ys = [pos3d[n][1] for n in nodes]
         zs = [pos3d[n][2] for n in nodes]
@@ -113,24 +114,36 @@ def plot_trap_graph_positions(trap_graph,
     # 3) add qubit‐index labels
     if qubit_positions is not None:
         for q_idx, node in enumerate(qubit_positions):
-            x,y,z = pos3d[node]
+            if len(node) < 3:  # not idle
+                x, y, z = pos3d[node]
+            else:
+                x, y, z = pos3d[node[:2]]
+                z += idle_height
             # draw number just above the dot
-            ax.text(x, y, z + label_offset,
-                    str(q_idx),
-                    fontsize=label_size,
-                    ha='center', va='bottom',
-                    color='black')
+            ax.text(
+                x,
+                y,
+                z + label_offset,
+                str(q_idx),
+                fontsize=label_size,
+                ha="center",
+                va="bottom",
+                color="black",
+            )
 
     # final styling
-    ax.set_xlabel('Column')
-    ax.set_ylabel('Row')
-    ax.set_zlabel('Idle Height')
-    ax.legend(loc='upper left')
-    ax.set_title('Penning Trap Graph' + (f" – step with qubits" if qubit_positions else ""))
+    ax.set_xlabel("Column")
+    ax.set_ylabel("Row")
+    ax.set_zlabel("Idle Height")
+    ax.legend(loc="upper left")
+    ax.set_title(
+        "Penning Trap Graph" + (f" – step with qubits" if qubit_positions else "")
+    )
     plt.tight_layout()
     plt.show()
 
-def plot_trap_graph(trap_graph, idle_height=1.5, figsize=(8,8)):
+
+def plot_trap_graph(trap_graph, idle_height=1.5, figsize=(8, 8)):
     """
     Plot the Penning trap graph in 3D.
 
@@ -148,11 +161,11 @@ def plot_trap_graph(trap_graph, idle_height=1.5, figsize=(8,8)):
     # build 3D positions
     pos = {}
     for n, data in trap_graph.nodes(data=True):
-        t = data.get('type')
-        if t in ('standard', 'interaction'):
+        t = data.get("type")
+        if t in ("standard", "interaction"):
             r, c = n
             z = 0
-        elif t == 'idle':
+        elif t == "idle":
             r, c, _ = n
             z = idle_height
         else:
@@ -161,33 +174,33 @@ def plot_trap_graph(trap_graph, idle_height=1.5, figsize=(8,8)):
 
     # start figure
     fig = plt.figure(figsize=figsize)
-    ax = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot(111, projection="3d")
 
     # draw edges
     for u, v in trap_graph.edges():
         x0, y0, z0 = pos[u]
         x1, y1, z1 = pos[v]
-        ax.plot([x0, x1], [y0, y1], [z0, z1], color='lightgray', linewidth=1)
+        ax.plot([x0, x1], [y0, y1], [z0, z1], color="lightgray", linewidth=1)
 
     # draw nodes by type
     specs = {
-        'standard':   ('blue',    50),
-        'interaction':('red',     80),
-        'idle':       ('green',   50),
+        "standard": ("blue", 50),
+        "interaction": ("red", 80),
+        "idle": ("green", 50),
     }
     for t, (color, size) in specs.items():
-        ns = [n for n, d in trap_graph.nodes(data=True) if d['type']==t]
+        ns = [n for n, d in trap_graph.nodes(data=True) if d["type"] == t]
         xs = [pos[n][0] for n in ns]
         ys = [pos[n][1] for n in ns]
         zs = [pos[n][2] for n in ns]
         ax.scatter(xs, ys, zs, c=color, s=size, label=t.capitalize(), depthshade=True)
 
     # labels & legend
-    ax.set_xlabel('Column')
-    ax.set_ylabel('Row')
-    ax.set_zlabel('Idle Height')
-    ax.legend(loc='upper left')
-    ax.set_title('Penning Trap Graph')
+    ax.set_xlabel("Column")
+    ax.set_ylabel("Row")
+    ax.set_zlabel("Idle Height")
+    ax.legend(loc="upper left")
+    ax.set_title("Penning Trap Graph")
     ax.xaxis.pane.fill = False
     ax.yaxis.pane.fill = False
     ax.zaxis.pane.fill = False
