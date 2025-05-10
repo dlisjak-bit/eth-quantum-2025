@@ -13,9 +13,9 @@ def minihadamard(wire: int):
 
 
 def Rz(theta: float, wire: int):
-    qml.RX(np.pi, wires=wire)
-    qml.RY(-theta, wires=wire)
-    qml.RX(np.pi, wires=wire)
+    qml.RX(-np.pi / 2, wires=wire)
+    qml.RY(theta, wires=wire)
+    qml.RX(np.pi / 2, wires=wire)
 
 
 def CNOT(control: int, target: int):
@@ -27,31 +27,32 @@ def CNOT(control: int, target: int):
 
 
 def Rk(k: int, wire: int):
-    Rz(np.pi / 2**k, wire)
+    Rz(2 * np.pi / 2**k, wire)
 
 
 def Rk_dag(k: int, wire: int):
-    Rz(2*np.pi / 2**k, wire)
+    Rz(-2 * np.pi / 2**k, wire)
 
 
 def CRk(k: int, control: int, target: int):
+    Rk(k + 1, target)
+    Rk(k + 1, control)
     CNOT(control, target)
-    Rk_dag(k+1, target)
+    Rk_dag(k + 1, target)
     CNOT(control, target)
-    Rk(k+1, control)
-    Rk(k+1, target)
 
 
 @qml.qnode(dev)
 def circuit(k=2):
-    qml.ctrl(qml.RZ(np.pi / (2**k), wires=1), control=0)
+    # qml.RZ(theta, 1)
+    qml.ctrl(qml.RZ(2 * np.pi / (2**k), wires=1), control=0)
     return qml.density_matrix(wires=range(N))
 
 
 @qml.qnode(dev1)
 def cnot(k=2):
     CRk(k, control=0, target=1)
-
+    # Rz(theta, 1)
     return qml.density_matrix(wires=range(N))
 
 
@@ -61,4 +62,5 @@ user_results = cnot()
 if np.allclose(expected_results, user_results, atol=1e-5):
     print("Correct")
 else:
+    print("Wrong")
     print(expected_results - user_results)

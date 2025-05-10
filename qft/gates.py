@@ -2,15 +2,23 @@ import pennylane as qml
 import numpy as np
 
 
+RY = lambda theta, wire: [("RY", theta, wire)]
+RX = lambda theta, wire: [("RX", theta, wire)]
+
+
 def minihadamard(wire: int):
     qml.RY(np.pi / 2, wires=wire)
     qml.RX(np.pi, wires=wire)
 
+minihadamard = lambda wire: RY(np.pi / 2, wire) + RX(np.pi, wire)
 
-def Rz(theta: float, wire: int):
+
+def RZ(theta: float, wire: int):
     qml.RX(-np.pi / 2, wires=wire)
     qml.RY(theta, wires=wire)
     qml.RX(np.pi / 2, wires=wire)
+
+RZ = lambda theta, wire: RX(-np.pi / 2, wire) + RY(theta, wire) + RX(np.pi / 2, wire)
 
 
 def CNOT(control: int, target: int):
@@ -20,21 +28,33 @@ def CNOT(control: int, target: int):
     qml.RX(-np.pi / 2, wires=control)
     qml.RY(-np.pi / 2, wires=control)
 
+IsingXX = lambda theta, control, target: [("MS", np.pi / 2, control, target)]
 
-def Rk(k: int, wire: int):
-    Rz(2 * np.pi / 2**k, wire)
-
-
-def Rk_dag(k: int, wire: int):
-    Rz(-2 * np.pi / 2**k, wire)
+CNOT = lambda control, target: RY(np.pi / 2, control) + IsingXX(np.pi / 2, control, target) + \
+                            RX(-np.pi / 2, target) + RX(-np.pi / 2, control) + RY(-np.pi / 2, control)
 
 
-def CRk(k: int, control: int, target: int):
-    Rk(k + 1, target)
-    Rk(k + 1, control)
+def RK(k: int, wire: int):
+    RZ(2 * np.pi / 2**k, wire)
+
+RK = lambda k, wire: RZ(2 * np.pi / 2 ** k, wire)
+
+
+def RK_dag(k: int, wire: int):
+    RZ(-2 * np.pi / 2**k, wire)
+
+RK_dag = lambda k, wire: RZ(-2 * np.pi / 2**k, wire)
+
+
+def CRK(k: int, control: int, target: int):
+    RK(k + 1, target)
+    RK(k + 1, control)
     CNOT(control, target)
-    Rk_dag(k + 1, target)
+    RK_dag(k + 1, target)
     CNOT(control, target)
+
+CRK = lambda k, control, target: RK(k + 1, target) + RK(k + 1, control) + CNOT(control, target) + RK_dag(k + 1, target) + CNOT(control, target)
+
 
 
 if __name__ == "__main__":
