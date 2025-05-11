@@ -28,18 +28,40 @@ def qft_explicit_schedule(wires):
 # hadamard_test_schedule = hadamard_test(0)
 # verify_only_qft.verifier_qft(hadamard_test_schedule, use_dummy=True)
 
-gate_sequence_test = qft_explicit_schedule(range(N))
-count = 0
-print("Gate sequence test:", gate_sequence_test)
 
+for qubit in range(N):
+    Output = []
+    gate_sequence_test = qft_explicit_schedule(range(N))
+    count = 0
+    print("Gate sequence test:", len(gate_sequence_test))
+    for gate in gate_sequence_test:
+        # print("Gate:", gate)
+        if gate[0][2] == qubit:
+            Output.append(gate[0])
+            count += 1
+        elif gate[0][0] == "MS":
+            if qubit in gate[0][2]:
+                count += 1
+                Output.append(gate[0])
+    print("Count:", count)
+    verify_only_qft.verifier_qft(gate_sequence_test)
+    print("QUBIT:", qubit)
+    print(Output)
+# qubit = 0  # 1-8 al 0-7
+
+# gate_sequence_test = qft_explicit_schedule(range(N))
+# count = 0
+# print("Gate sequence test:", len(gate_sequence_test))
 # for gate in gate_sequence_test:
 #     # print("Gate:", gate)
-#     if gate[0][2] == 1:
-#         print(gate[0][0], gate[0][2])
+#     if gate[0][2] == qubit:
+#         Output.append(gate[0])
 #         count += 1
 #     elif gate[0][0] == "MS":
-#         if 1 in gate[0][2]:
+#         if qubit in gate[0][2]:
 #             count += 1
-#             print(gate[0][0], gate[0][2])
+#             Output.append(gate[0])
 # print("Count:", count)
-verify_only_qft.verifier_qft(gate_sequence_test)
+# verify_only_qft.verifier_qft(gate_sequence_test)
+
+# print(Output)
