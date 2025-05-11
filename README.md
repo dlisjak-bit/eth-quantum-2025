@@ -6,6 +6,8 @@ All the important files are in `SOLUTION_Q8` folder, but not very well structure
 It features decomposing and optimizng and copmiling using a video game. The approach
 inside the game will be documented in the presentation.
 
+To validate the solution, run the `compiled_qft.py` inside `SOLUTION_Q8` folder.
+
 You are welcome to run the file `pygame_visualizer.py` fron inside the folder
 to see the game in action. Of course, the game is only the programmer's interface.
 The end result is the `positions_history` and `gates_schedule` files, which can be
@@ -14,7 +16,7 @@ directly used to verify the solution, although it is verified while playing the 
 There were many wonderful attempts at algorithmically solving the problem, many
 of them hidden in supplementary files and other branches for the curious.
 
-[!App Demo](img1.png)
+![App Demo](img1.png)
 
 # Quantum Circuit Compilation Challenge: 8-Qubit QFT on a Penning Trapped Ion Architecture
 
