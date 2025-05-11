@@ -28,9 +28,9 @@ def qft_explicit_schedule(wires):
 # hadamard_test_schedule = hadamard_test(0)
 # verify_only_qft.verifier_qft(hadamard_test_schedule, use_dummy=True)
 
-Output = []
 
 for qubit in range(N):
+    Output = []
     gate_sequence_test = qft_explicit_schedule(range(N))
     count = 0
     print("Gate sequence test:", len(gate_sequence_test))

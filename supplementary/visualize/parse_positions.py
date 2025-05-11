@@ -1,5 +1,5 @@
 all = []
-N = 7
+N = 8
 with open("positions.csv", "r") as f:
     for line in f:
         timestep = []

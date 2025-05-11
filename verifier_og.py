@@ -1,15 +1,13 @@
 import pennylane as qml
 import numpy as np
 
-N = 8
-
-mixed_device = qml.device("default.mixed", wires=N)
+mixed_device = qml.device("default.mixed", wires=8)
 
 
 @qml.qnode(device=mixed_device)
 def circuit():
-    qml.QFT(wires=range(N))
-    return qml.density_matrix(wires=range(N))
+    qml.QFT(wires=range(8))
+    return qml.density_matrix(wires=range(8))
 
 
 def compiled_circuit(gates_schedule) -> qml.QNode:
@@ -33,7 +31,7 @@ def compiled_circuit(gates_schedule) -> qml.QNode:
                     qml.RY(gate[1], wires=gate[2])
                 elif gate[0] == "MS":
                     qml.IsingXX(gate[1], wires=gate[2])
-        return qml.density_matrix(wires=range(N))
+        return qml.density_matrix(wires=range(8))
 
     return circuit
 
@@ -53,10 +51,9 @@ def verifier(positions_history, gates_schedule, graph) -> None:
             f"Length of positions history ({len(positions_history)}) does not match length of gates schedule ({len(gates_schedule)})."
         )
     for i, positions in enumerate(positions_history):
-        if len(positions) != N:
+        if len(positions) != 8:
             raise ValueError(f"Invalid number of ions at step {i}: {len(positions)}")
         for j, p in enumerate(positions):
-            # print(positions, graph.nodes())
             if p not in graph.nodes():
                 raise ValueError(
                     f"Invalid position: {p} at step {i} for ion {j} is not part of the graph."
@@ -125,12 +122,12 @@ def verifier(positions_history, gates_schedule, graph) -> None:
                 )
 
             if isinstance(wires, int):
-                if not (0 <= wires < N):
+                if not (0 <= wires < 8):
                     raise ValueError(
                         f"Error: Gate wire at step {i} is out of range [0, 8). Found: {wires}"
                     )
             elif isinstance(wires, (list, tuple)):
-                if not all(0 <= w < N for w in wires):
+                if not all(0 <= w < 8 for w in wires):
                     raise ValueError(
                         f"Error: One or more gate wires at step {i} are out of range [0, 8). Found: {wires}"
                     )

@@ -1,13 +1,14 @@
 import pennylane as qml
 import numpy as np
 
-mixed_device = qml.device("default.mixed", wires=8)
+N = 8
+mixed_device = qml.device("default.mixed", wires=N)
 
 
 @qml.qnode(device=mixed_device)
 def circuit():
-    qml.QFT(wires=range(8))
-    return qml.density_matrix(wires=range(8))
+    qml.QFT(wires=range(N))
+    return qml.density_matrix(wires=range(N))
 
 
 def get_temperatures(positions_history, graph):
@@ -113,7 +114,7 @@ def compiled_circuit_noisy(gates_schedule, temperature) -> qml.QNode:
     Returns:
         qml.QNode: A Pennylane QNode representing the circuit.
     """
-    dev = qml.device("default.mixed", wires=8)
+    dev = qml.device("default.mixed", wires=N)
 
     @qml.qnode(dev)
     def circuit():
@@ -134,12 +135,12 @@ def compiled_circuit_noisy(gates_schedule, temperature) -> qml.QNode:
                         * average_temp
                         * (2 * average_temp + 1)
                     )
-                    assert 0.0 <= prob <= 1.0, (
-                        f"Average temperature too high: ion {gate[2][0]}: {temp1}, ion {gate[2][1]}: {temp2}"
-                    )
+                    assert (
+                        0.0 <= prob <= 1.0
+                    ), f"Average temperature too high: ion {gate[2][0]}: {temp1}, ion {gate[2][1]}: {temp2}"
                     qml.IsingXX(gate[1], wires=gate[2])
                     DepolarizingChannel(prob, wires=gate[2])
-        return qml.density_matrix(wires=range(8))
+        return qml.density_matrix(wires=range(N))
 
     return circuit
 
