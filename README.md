@@ -11,6 +11,11 @@ to see the game in action. Of course, the game is only the programmer's interfac
 The end result is the `positions_history` and `gates_schedule` files, which can be
 directly used to verify the solution, although it is verified while playing the game.
 
+There were many wonderful attempts at algorithmically solving the problem, many
+of them hidden in supplementary files and other branches for the curious.
+
+[!App Demo](img1.png)
+
 # Quantum Circuit Compilation Challenge: 8-Qubit QFT on a Penning Trapped Ion Architecture
 
 Welcome to the challenge! Your goal is to compile a Quantum Fourier Transform (QFT) circuit for 8 qubits onto a Penning trapped ion quantum computer. You'll need to manage ion transport, gate scheduling, and noise considerations.
