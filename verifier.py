@@ -1,5 +1,6 @@
 import pennylane as qml
 import numpy as np
+import matplotlib.pyplot as plt
 
 N = 8
 
@@ -33,8 +34,12 @@ def compiled_circuit(gates_schedule) -> qml.QNode:
                     qml.RY(gate[1], wires=gate[2])
                 elif gate[0] == "MS":
                     qml.IsingXX(gate[1], wires=gate[2])
+
         return qml.density_matrix(wires=range(N))
 
+    qml.drawer.use_style("pennylane")
+    fig, ax = qml.draw_mpl(circuit)()
+    plt.savefig("compiled_circuit.png", dpi=300)
     return circuit
 
 
@@ -233,6 +238,7 @@ def verifier(positions_history, gates_schedule, graph) -> None:
     print("Verifying the fidelity of the circuit without adding noise...")
     expected_result = circuit()
     user_result = compiled_circuit(gates_schedule)()
+
     user_fidelity = qml.math.fidelity(expected_result, user_result)
     print("Fidelity of the circuit:", user_fidelity)
     if not np.allclose(expected_result, user_result, atol=1e-5):
