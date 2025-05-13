@@ -5,7 +5,7 @@ import numpy as np
 qftdir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, qftdir)
 import trap
-import verifier_og
+import verifier
 import fidelity
 
 N = 8
@@ -568,5 +568,5 @@ positions = [
 ]
 
 print(len(positions))
-verifier_og.verifier(positions, gates, trap_graph)
+verifier.verifier(positions, gates, trap_graph)
 fidelity.fidelity(positions, gates, trap_graph)

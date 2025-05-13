@@ -829,7 +829,7 @@ step = 0
 subframe = 0
 step = 0
 running = True
-writer = imageio.get_writer("animation.mp4", fps=FPS)
+writer = imageio.get_writer("animation.gif", fps=FPS)
 first = True
 while running:
 
